@@ -77,11 +77,11 @@ public class StockService {
 	}
 ```
 
-![image.png](image.png)
+![image.png](./images/image.png)
 
 100번의 decrease를 했지만 재고가 남은 재고가 96개인 현상 발생  → 동시성 이슈(Concurrency Issue) 발생 
 
-![image.png](image%201.png)
+![image.png](./images/image%201.png)
 
 Race Condition (경쟁 상태)
 
@@ -104,7 +104,7 @@ Race Condition (경쟁 상태)
 
 synchronized를 메서드 선언부에 붙여주면 해당 메서드는 한개의 쓰레드만 접근 가능 
 
-![image.png](image%202.png)
+![image.png](./images/image%202.png)
 
 synchronized를 사용하여도 테스트 실패 
 
@@ -157,7 +157,7 @@ DB가 업데이트 되기 전에 다른 쓰래드가 stockService.decrease() 호
 
 ### synchronized를 이용했을 때 발생할 수 있는 문제
 
-![image.png](image%203.png)
+![image.png](./images/image%203.png)
 
 스프링 프로세스 하나에서 처리하는 동시성 해결이므로 서버가 여러대라면 Race Condition 발생 
 
@@ -169,13 +169,13 @@ synchronized 거의 사용 X
 
 - 실제로 데이터에 Lock을 걸어 정합성을 맞추는 방법, exclusive lock을 걸게되면 다른 트랜잭션에서는 lock이 해제되기전에 데이터를 가져갈 수 없게된다 → 데드락이 발생할 수도 있다.
 
-![image.png](image%204.png)
+![image.png](./images/image%204.png)
 
 ### 2. Optimistic Lock(낙관적 락)
 
 - 실제 Lock을 이용하지 않고 버전을 이용함으로써 정합성을 맞추는 방법 먼저 데이터를 읽은 후에 update를 수행할 때 현재 내가 읽은 버전이 맞는지 확인하며 업데이트를 수행 내가 읽은 버전에서 수정사항이 생겼을 경우에는 application에서 다시 읽은 후에 작업을 수행해야 한다.
 
-![image.png](image%205.png)
+![image.png](./images/image%205.png)
 
 ### 3. Named Lock(분산 락)
 
@@ -185,7 +185,7 @@ Pessimistic Lock과 유사하지만 row, 나 table 단위로 락을 거는게 �
 
 ### Pessimistic Lock을 이용해 동시성 해결
 
-![image.png](image%206.png)
+![image.png](./images/image%206.png)
 
  
 
@@ -223,9 +223,9 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
 }
 ```
 
-![image.png](image%207.png)
+![image.png](./images/image%207.png)
 
-![image.png](image%208.png)
+![image.png](./images/image%208.png)
 
 for update → 락을 걸고 데이터를 가져오는 부분 
 
@@ -237,7 +237,7 @@ But 성능 저하
 
 ### Optimistic Lock을 이용하여 동시성 해결
 
-![image.png](image%209.png)
+![image.png](./images/image%209.png)
 
 Service
 
@@ -325,7 +325,7 @@ Test
 	}
 ```
 
-![image.png](image%2010.png)
+![image.png](./images/image%2010.png)
 
 별도의 락을 잡지 않으므로 Pessimistic Lock보다 성능 상 이점이 있음 
 
@@ -335,7 +335,7 @@ Test
 
 ### Named Lock(분산 락)  - Mysql 사용
 
-![image.png](image%2011.png)
+![image.png](./images/image%2011.png)
 
 Facade
 
@@ -418,7 +418,7 @@ Test Code
 	}
 ```
 
-![image.png](image%2012.png)
+![image.png](./images/image%2012.png)
 
 주로 분산락을 구현할 때 사용 
 
@@ -436,13 +436,13 @@ but 트랜잭션 종료 시에 락 해제 세션 관리를 잘 해줘야하기 �
     - setnx(set if not exist → 기존의 값이 없을 때만 set) 명령어를 활용하여 분산락 구현
     - spin lock 방식 → retry로직 개발자가 직접 작성해야함.  → lock을 획득하려는 쓰레드가 lock을 사용할 수 있는지 반복적으로 확인하며 lock획득 시도
 
-![image.png](image%2013.png)
+![image.png](./images/image%2013.png)
 
 - Redisson
     - pus-sub 기반으로 Lock 구현 제공  →  채널을 만들고 lock을 점유중인 쓰레드가 lock 획득 대기 쓰레드에게 해제를 알려줌으로 안내를 받은 쓰레드가 락 획득
         - 별도의 retry 로직 작성이 필요없음.
 
-![image.png](image%2014.png)
+![image.png](./images/image%2014.png)
 
 ### Lettuce를 이용한 Named Lock
 
@@ -494,7 +494,7 @@ public class RedisLockRepository {
 }
 ```
 
-![image.png](image%2015.png)
+![image.png](./images/image%2015.png)
 
 구현이 간단하다 But 스핀 락 방식이므로 레디스에 부하를 줄 수 있다. 
 
@@ -502,7 +502,7 @@ Thread Sleep을 통해 락 획득 재시도 간에 텀을 둬야한다.
 
 ### Redisson을 활용한 Named Lock
 
-![image.png](image%2016.png)
+![image.png](./images/image%2016.png)
 
 다음과 같이 pub/sub 활용 
 
