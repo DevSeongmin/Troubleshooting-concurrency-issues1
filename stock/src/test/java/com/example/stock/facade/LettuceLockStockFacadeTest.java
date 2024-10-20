@@ -15,24 +15,25 @@ import com.example.stock.domain.Stock;
 import com.example.stock.repository.StockRepository;
 
 @SpringBootTest
-class OptimistickLockStockFacadeTest {
+class LettuceLockStockFacadeTest {
 
 	@Autowired
-	OptimistickLockStockFacade optimistickLockStockFacade;
+	private LettuceLockStockFacade lettuceLockStockFacade;
 	@Autowired
 	private StockRepository stockRepository;
 
 	@BeforeEach
 	public void before() {
 		stockRepository.save(new Stock(1L, 100L));
+
 	}
+
 	@AfterEach
 	public void after() {
 		stockRepository.deleteAll();
 	}
-
 	@Test
-	public void 낙관적락_동시에_100개의_요청() throws InterruptedException{
+	public void 네임드_락_동시에_100개의_요청() throws InterruptedException{
 		int threadCount = 100;
 		ExecutorService executorService = Executors.newFixedThreadPool(32);
 		CountDownLatch latch = new CountDownLatch(threadCount);
@@ -40,7 +41,7 @@ class OptimistickLockStockFacadeTest {
 		for (int i = 0; i < threadCount; i++) {
 			executorService.execute(() -> {
 				try {
-					optimistickLockStockFacade.decrease(1L, 1L);
+					lettuceLockStockFacade.decrease(1L, 1L);
 				} catch (InterruptedException e) {
 					throw new RuntimeException(e);
 				} finally {
@@ -54,4 +55,5 @@ class OptimistickLockStockFacadeTest {
 
 		Assertions.assertThat(stock.getQuantity()).isEqualTo(0L);
 	}
+
 }
