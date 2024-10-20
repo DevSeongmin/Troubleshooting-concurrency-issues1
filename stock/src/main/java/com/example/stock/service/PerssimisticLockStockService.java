@@ -1,7 +1,5 @@
 package com.example.stock.service;
 
-import java.util.Optional;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,16 +10,16 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class StockService {
+public class PerssimisticLockStockService {
 
 	private final StockRepository stockRepository;
 
-	// @Transactional
-	public synchronized void  decrease(Long id, Long quantity) {
-		Stock stock = stockRepository.findById(id)
-			.orElseThrow(() -> new IllegalArgumentException("Stock not found"));
+	@Transactional
+	public void decrease(Long id, Long quantity) {
+		Stock stock = stockRepository.findByIdWithPessimisticLock(id);
 
 		stock.decrease(quantity);
+
 		stockRepository.save(stock);
 	}
 }
