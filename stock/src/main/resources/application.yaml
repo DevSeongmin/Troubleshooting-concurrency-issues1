@@ -3,6 +3,7 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: true
+    open-in-view: false
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/stock_example
